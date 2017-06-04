@@ -11,55 +11,68 @@
     <canvas id="myCanvas"></canvas>
     <script type="text/javascript">
         (function(){
-            var canvas = {},
-                image = {};
-            //获取canvas元素
-            canvas.obj = document.getElementById('myCanvas');
+            (function () {
+                var canvas = {};
+                //获取canvas元素
+                canvas.obj = document.getElementById('myCanvas');
 
-            if(canvas.obj.getContext) {
+                if(canvas.obj.getContext) {
 
-                //获取渲染上下文
-                canvas.ctx = canvas.obj.getContext('2d');
+                    //获取渲染上下文
+                    canvas.ctx = canvas.obj.getContext('2d');
 
-                //设置画布大小为屏幕宽高
-                canvas.w = canvas.obj.width = document.body.clientWidth;
-                canvas.h = canvas.obj.height = document.body.clientHeight;
+                    //设置画布大小为屏幕宽高
+                    canvas.w = canvas.obj.width = document.body.clientWidth;
+                    canvas.h = canvas.obj.height = document.body.clientHeight;
 
-                //新建一个image对象
-                var img = new Image();
+                    //新建一个image对象
+                    var img = new Image();
 
-                //图像加载完后
-                img.onload = function() {
-                    //把图像信息保存在image里面
-                    image.obj = img;
-                    image.w = img.width;
-                    image.h = img.height;
-                    image.x = parseInt(canvas.w/2 - image.w/2);
-                    image.y = 200;
+                    //图像加载完后
+                    img.onload = function() {
+                        //把图像信息保存在image里面
+                        var image = {
+                            obj: img,
+                            w: img.width,
+                            h: img.height,
+                            x: parseInt(canvas.w/2 - img.width/2),
+                            y: 200,
+                        }
 
-                    //把图像绘制到画布坐标为(100,100)的地方
-                    canvas.ctx.drawImage(image.obj, image.x, image.y, image.w, image.h);
+                        //把图像绘制到画布坐标为(100,100)的地方
+                        canvas.ctx.drawImage(image.obj, image.x, image.y, image.w, image.h);
 
-                    image.imageData = canvas.ctx.getImageData(image.x,image.y,image.w,image.h);
+                        const imageData = canvas.ctx.getImageData(image.x,image.y,image.w,image.h);
 
-                    //计算出符合要求的像素
-                    var start = {
-                        x: canvas.w/2,
-                        y: image.y + image.h + 300
-                    }
+                        // //计算出符合要求的像素
+                        // var start = {
+                        //     x: canvas.w/2,
+                        //     y: image.y + image.h + 300
+                        // }
 
-                    draw(calculate(image).map(randomPoint), start, 200, 0)
-                };
+                        // draw(canvas, calculate(image).map(randomPoint.bind(null, start)), 120)
 
-                //设置image的source
-                img.src = './rocket.png';
-            }
+                        draw(canvas, calculate(image, imageData).map((p) => randomPoint({
+                            x: Math.random() * canvas.w,
+                            y: Math.random() * canvas.h
+                        }, p)), 120)
+                    };
 
-            function randomPoint({ x, y, fillStyle }) {
+                    //设置image的source
+                    img.src = './rocket.png';
+                }
+            }())
+
+            function randomPoint(start, { x, y, fillStyle }, {
+                delay = 240,
+                offset = 10
+            } = {}) {
                 return {
-                    x: x + (Math.random() - 0.5 ) * 20,
-                    y: y + (Math.random() - 0.5 ) * 20,
-                    curTime: -parseInt(Math.random() * 1200, 10),
+                    x: start.x,
+                    y: start.y,
+                    bW: x - start.x - + (Math.random() - 0.5 ) * offset,
+                    bH: y - start.y + (Math.random() - 0.5 ) * offset,
+                    curTime: -parseInt(Math.random() * delay, 10),
                     fillStyle
                 }
             }
@@ -70,70 +83,81 @@
             function easeInOutExpo(t, b, c, d) {
                 t /= d / 2;
                 if (t < 1) return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
-                t--;
-                return c / 2 * ( -Math.pow(2, -10 * t) + 2) + b;
+
+                return c / 2 * ( -Math.pow(2, -10 * (t - 1)) + 2) + b;
             }
             //计算并保存坐标
-            function calculate(image) {
-                var particles = [];
+            function calculate(image, imageData) {
+                const particles = [];
                 //只保存100行，100列的像素值
-                var cols = 100,
-                    rows = 100;
+                const cols = 100;
+                const rows = 100;
                 //设成100行，100列后每个单元的宽高
-                var cellWidth = image.w / cols,
-                    cellHeight = image.h / rows;
+                const cellWidth = image.w / cols;
+                const cellHeight = image.h / rows;
 
-                var pos = 0; //数组中的位置
-                var data = image.imageData.data; // 像素值数组
-                for(var i = 0; i < cols; i++) {
-                    for(var j = 0; j < rows; j++) {
-                        var x = Math.round(i * cellWidth)
-                        var y = Math.round(j * cellHeight)
+                const data = imageData.data; // 像素值数组
+                for(let i = 0; i < cols; i++) {
+                    for(let j = 0; j < rows; j++) {
+                        const x = Math.round(i * cellWidth)
+                        const y = Math.round(j * cellHeight)
 
                         //计算(i,j)在数组中的R的坐标值
-                        pos = (y * image.w + x) * 4;
+                        const pos = (y * image.w + x) * 4;
 
                         //判断像素透明度值是否符合要求
-                        if(data[pos+3] > 100){
-                            var particle = {
-                                //x,y值都随机一下
-                                x: image.x + x,
-                                y: image.y + y
-                            }
-                            particle.fillStyle = rgbToHash(data[pos], data[pos+1], data[pos+2])
-
-                            //符合要求的粒子保存到数组里
-                            particles.push(particle);
+                        if(data[pos + 3] <= 100){
+                            continue;
                         }
+
+                        //符合要求的粒子保存到数组里
+                        particles.push({
+                            x: image.x + x,
+                            y: image.y + y,
+                            fillStyle: rgbToHash(
+                                data[pos],
+                                data[pos + 1],
+                                data[pos + 2]
+                            )
+                        });
                     }
                 }
                 return particles;
             }
 
             //绘图案
-            function draw(particles, start, totalT) {
+            function draw(canvas, particles, totalT) {
                 const ctx = canvas.ctx
                 //清空画布
                 ctx.clearRect(0,0,canvas.w,canvas.h);
-
-                particles.forEach((p) => {
-                    p.curTime++
-                    if (p.curTime <= 0) {
-                        return;
+                let unfinished = false;
+                particles.forEach(p => {
+                    if (!unfinished && p.curTime < totalT) {
+                        unfinished = true
                     }
-
-                    //设置填充颜色
-                    ctx.fillStyle = p.fillStyle
-                    const x = easeInOutExpo(p.curTime, start.x, p.x - start.x, totalT)
-                    const y = easeInOutExpo(p.curTime, start.y, p.y - start.y, totalT)
-                    //绘粒子到画布上
-                    canvas.ctx.fillRect(x, y, 1, 1)
+                    p.curTime++
+                    drawPoint(ctx, p, totalT);
                 })
 
-                requestAnimationFrame(() => {
+                if (unfinished) {
                     //计算后绘到画布上
-                    draw(particles, start, totalT);
-                });
+                    requestAnimationFrame(() => {
+                        draw(canvas, particles, totalT);
+                    });
+                } else {
+                    console.warn('finish')
+                }
+            }
+
+            function drawPoint(ctx, { bW, bH, x, y, curTime, fillStyle }, totalTime) {
+                if (curTime < 1) return;
+                //设置填充颜色
+                ctx.fillStyle = fillStyle
+                //绘粒子到画布上
+                ctx.fillRect(
+                    easeInOutExpo(curTime, x, bW, totalTime),
+                    easeInOutExpo(curTime, y, bH, totalTime),
+                    1, 1)
             }
         }())
     </script>
