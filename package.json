@@ -1,0 +1,7 @@
+{
+  "name": "rocket",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "炒饭 <chaofan@2dfire.com>",
+  "license": "MIT"
+}
