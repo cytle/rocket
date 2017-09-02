@@ -38,9 +38,9 @@
 			}
 		}
 		const settings = {
-			maxCols: 300,
-			maxRows: 150,
-			backgroundColor: '#eee'
+			maxCols: 100,
+			maxRows: 100,
+			backgroundColor: '#0c1328'
 		}
     //计算并保存坐标
     function calculate({
@@ -110,18 +110,6 @@
       });
     }
 
-		/**
-		 * [drawPoint description]
-		 * @param  {[type]} ctx       [description]
-		 * @param  {[type]} bW        [description]
-		 * @param  {[type]} bH        [description]
-		 * @param  {[type]} x         [description]
-		 * @param  {[type]} y         [description]
-		 * @param  {[type]} curTime   [description]
-		 * @param  {[type]} fillStyle [description]
-		 * @param  {[type]} totalTime [description]
-		 * @return {[type]}           false表示动画还没有画完，true表示动画画完了
-		 */
     function drawPoint(ctx, { bW, bH, x, y, curTime, fillStyle }, totalTime) {
 			// curTime 小于1表示还没有画布中
       if (curTime < 1) return -1;
@@ -129,8 +117,8 @@
       ctx.fillStyle = fillStyle
       //绘粒子到画布上
       ctx.fillRect(
-        easeInOutExpo(curTime, x, bW, totalTime) >> 0,
-        easeInOutExpo(curTime, y, bH, totalTime) >> 0,
+        easeInOutExpo(curTime, x, bW, totalTime),
+        easeInOutExpo(curTime, y, bH, totalTime),
         1, 1);
 
 			return curTime > totalTime ? 1 : 0;
@@ -188,9 +176,10 @@
       };
 
       //设置image的source
-      imgObj.src = './2dfire.png';
+      imgObj.src = './rocket.png';
     }
-		setTimeout(main, 2000);
+		main()
+		// setTimeout(main, 2000);
   </script>
 </body>
 </html>

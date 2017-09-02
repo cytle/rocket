@@ -1,21 +1,18 @@
-class Particle {
+export default class Particle {
 	constructor({
 		x,
 		y,
 		fillStyle,
 		start,
-		canvas,
-		delay = 240,
-		offset = 10,
-		random = false,
-		delay
+		delay,
+		offset
 	}) {
-		this.x = x;
-		this.y = y;
+		this.x = start.x;
+		this.y = start.y;
 		this.offsetX = x - start.x;
 		this.offsetY = y - start.y;
 		this.fillStyle = fillStyle;
-		this.canvas = canvas;
+		this.timeGap = 1;
 		if (offset) {
 			this.offsetX += (Math.random() - 0.5 ) * offset;
 			this.offsetY += (Math.random() - 0.5 ) * offset;
@@ -30,24 +27,15 @@ class Particle {
 	}
 
 	reverse() {
-		const start = this.start;
-
-		this.start = {
-			x: this.x,
-			y: this.y
-		};
-
-		this.x = start.x;
-		this.y = start.y;
-		this.time = 0;
+		this.timeGap *= -1;
 	}
 
 	get isFinished() {
-		return this.status === 1;
+		return this.status === this.timeGap;
 	}
 
 	nextPoint(animation, totalTime) {
-		this.time++;
+		this.time += this.timeGap;
 
 		// time 小于1表示还没有画布中
 		if (this.time < 1) {
@@ -55,7 +43,7 @@ class Particle {
 			return;
 		};
 
-		const { time, x, y } = this;
+		const { time, x, y, offsetX, offsetY } = this;
 
 		this.status = time > totalTime ? 1 : 0;
 
@@ -73,8 +61,5 @@ class Particle {
 				totalTime
 			})
 		}
-	}
-
-	function drawNextFrame(totalTime) {
 	}
 }

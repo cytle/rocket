@@ -4,10 +4,10 @@ class Canvas {
 	constructor({
 		totalTime,
 		el,
-		globalAlpha = 0.2,
+		globalAlpha = 0.8,
 		width,
 		height,
-		backgroundColor = '#FFF'
+		backgroundColor = '#000'
 	}) {
 		if(!el.getContext) {
 			throw new Error('canvas.getContext 不支持');
@@ -23,6 +23,17 @@ class Canvas {
 
 		this.totalTime = totalTime;
 		this.backgroundColor = backgroundColor;
+	}
+
+	readImageData({ x, y, width, height }, imgObj) {
+		const { ctx } = this;
+		//把图像绘制到画布坐标为(100,100)的地方
+		ctx.drawImage(imgObj, x, y, width, height);
+		// imgObj = null;
+		const imageData = ctx.getImageData(x, y, width, height);
+		// ctx.clearRect(0, 0, this.width, this.height); // 清除画布
+
+		return imageData.data;
 	}
 
 	// 清空画布
@@ -45,7 +56,7 @@ class Canvas {
 
 		this.beforeDraw();
 
-		for (particle of particles) {
+		for (const particle of particles) {
 			const point = particle.nextPoint(easeInOutExpo, totalTime);
 			if (!point) {
 				continue;

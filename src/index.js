@@ -1,9 +1,10 @@
 import Particle from './particle';
+import Canvas from './canvas';
 
 function loadImage(src, cb) {
 	//新建一个image对象
-	let imgObj = new Image();
-	imgObj.onload(() => cb(imgObj));
+	const imgObj = new Image();
+	imgObj.onload = () => cb(imgObj);
 	//设置image的source
 	imgObj.src = src;
 }
@@ -17,6 +18,10 @@ class Main {
 		height = 400,
 		globalAlpha,
 		backgroundColor,
+		maxCols = 100,
+		maxRows = 50,
+		particleDelay,
+		particleOffset
 	}) {
 		//获取canvas元素
 		this.canvas = new Canvas({
@@ -28,34 +33,40 @@ class Main {
 			backgroundColor
 		});
 		this.draw = this.draw.bind(this);
+		this.maxCols = maxCols;
+		this.maxRows = maxRows;
+		this.particleDelay = particleDelay;
+		this.particleOffset = particleOffset;
+
 		loadImage(src, (imgObj) => {
-			const imageData = this.canvas.readImageData(imgObj);
 			this.image = {
 				width: imgObj.width,
 				height: imgObj.height,
-				x: 0,
-				y: 0
+				x: (this.canvas.width - imgObj.width) / 2,
+				y: (this.canvas.height - imgObj.height) / 2
 			};
+			const imageData = this.canvas.readImageData(this.image, imgObj);
+
 			this.particles = this.calculateParticles(imageData, {
-				start() => {
-					return this.fullParticlesStart();
-				}
+				start: this.fullParticlesStart()
 			});
 			this.draw();
 		});
 	}
 
-	fullParticlesStart(particles) {
-		return {
+	fullParticlesStart() {
+		const { width, height } = this.canvas;
+		return () => ({
 			x: Math.random() * width,
 			y: Math.random() * height
-		};
+		});
 	}
-	onePointParticlesStart(particles) {
-		return {
+	onePointParticlesStart() {
+		const start = {
 			x: this.canvas.width / 2,
-			y: 200 + this.image.height + 300
-		}
+			y: Math.min(this.canvas.height - 10, this.image.y + this.image.height + 300)
+		};
+		return () => start;
 	}
 	calculateParticles(imageData, { start }) {
 		const particles = [];
@@ -89,7 +100,8 @@ class Main {
 					y: imageY + y,
 					fillStyle: `rgb(${imageData[pos]}, ${imageData[pos + 1]}, ${imageData[pos + 2]})`,
 					start: start(),
-					canvas: this.canvas
+					delay: this.particleDelay,
+					offset: this.particleOffset
 				}));
 			}
 		}
@@ -99,11 +111,24 @@ class Main {
 		if (this.particles.every(({ isFinished }) => isFinished)) {
 			this.particles.forEach(p => p.reverse());
 		}
-		this.canvas.draw(this.particles);
+		this.canvas.drawParticles(this.particles);
 
 		// 下一帧绘画
 		requestAnimationFrame(this.draw);
 	}
 }
 
-new Main('./rocket', document.getElementById('myCanvas'));
+new Main({
+	src: './rocket/rocket.png',
+	el: document.getElementById('myCanvas'),
+	particleDelay: 240,
+	particleOffset: 10,
+	maxCols: 100,
+	maxRows: 100,
+	width: document.body.clientWidth,
+	height: document.body.clientHeight,
+	globalAlpha: 0.4,
+	backgroundColor: '#0c1328',
+});
+
+console.log('asdasd');

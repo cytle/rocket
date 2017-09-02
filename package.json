@@ -2,12 +2,23 @@
   "name": "rocket",
   "version": "1.0.0",
   "main": "index.js",
-	"script": {
-		"build": "rollup src/index.js --o ./dist/bundle.js --f iife"
-	},
+  "scripts": {
+		"build": "rollup -c rollup.config.js",
+    "dev": "rollup -c rollup.config.js --watch"
+  },
   "author": "炒饭 <chaofan@2dfire.com>",
   "license": "MIT",
   "devDependencies": {
-    "rollup": "^0.49.2"
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^7.2.3",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.6.0",
+    "babelrc-rollup": "^3.0.0",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.3.2",
+    "eslint-plugin-import": "^2.7.0",
+    "rollup": "^0.49.2",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-node-resolve": "^3.0.0"
   }
 }
