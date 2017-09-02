@@ -9,21 +9,39 @@ function loadImage(src, cb) {
 }
 
 class Main {
-	constructor() {
+	constructor({
+		src,
+		totalTime = 120,
+		el,
+		width = 800,
+		height = 400,
+		globalAlpha,
+		backgroundColor,
+	}) {
 		//获取canvas元素
-		this.canvas = new Canvas(document.getElementById('myCanvas'));
+		this.canvas = new Canvas({
+			totalTime,
+			el,
+			width,
+			height,
+			globalAlpha,
+			backgroundColor
+		});
 		this.draw = this.draw.bind(this);
-		loadImage('./rocket.png', (imgObj) => {
+		loadImage(src, (imgObj) => {
 			const imageData = this.canvas.readImageData(imgObj);
 			this.image = {
 				width: imgObj.width,
-				height: imgObj.height
+				height: imgObj.height,
+				x: 0,
+				y: 0
 			};
-			this.draw(canvas, this.calculateParticles(imageData, {
+			this.particles = this.calculateParticles(imageData, {
 				start() => {
 					return this.fullParticlesStart();
 				}
-			}), 120);
+			});
+			this.draw();
 		});
 	}
 
@@ -87,3 +105,5 @@ class Main {
 		requestAnimationFrame(this.draw);
 	}
 }
+
+new Main('./rocket', document.getElementById('myCanvas'));
