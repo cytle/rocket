@@ -66,7 +66,7 @@ class Canvas {
       const point = particle.nextPoint(easeInOutExpo, totalTime);
       if (point !== null) {
         ctx.fillStyle = particle.fillStyle;
-        ctx.fillRect(point.x, point.y, particle.size, particle.size);
+        ctx.fillRect(point[0], point[1], particle.size, particle.size);
       }
     }
   }

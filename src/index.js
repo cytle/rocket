@@ -22,6 +22,7 @@ export default class Rocket {
     particleDelay,
     particleOffset,
     particleSize = 2,
+    repeat = false,
   }) {
     // 获取canvas元素
     this.canvas = new Canvas({
@@ -38,14 +39,13 @@ export default class Rocket {
     this.particleDelay = particleDelay;
     this.particleOffset = particleOffset;
     this.particleSize = particleSize;
+    this.repeat = repeat;
   }
   drawImage(src, {
     startFrom = 'full',
   } = {}) {
-    const canvas = this.canvas;
-    canvas.clear();
-    this.particles = [];
     loadImage(src, (imgObj) => {
+      const canvas = this.canvas;
       this.image = {
         width: imgObj.width,
         height: imgObj.height,
@@ -60,6 +60,10 @@ export default class Rocket {
       this.particles = this.calculateParticles(imageData, {
         generateStart,
       });
+
+      canvas.clear();
+      cancelAnimationFrame(this.requestID);
+
       this.draw();
     });
   }
@@ -125,7 +129,11 @@ export default class Rocket {
 
   draw() {
     const particles = this.particles;
-    if (particles.every(({ isFinished }) => isFinished)) {
+    if (particles.every(p => p.isFinished)) {
+      if (!this.repeat) {
+        console.info('finish');
+        return;
+      }
       for (let i = 0; i < particles.length; i++) {
         particles[i].reverse();
       }
@@ -134,6 +142,6 @@ export default class Rocket {
     this.canvas.drawParticles(particles);
 
     // 下一帧绘画
-    requestAnimationFrame(this.draw);
+    this.requestID = requestAnimationFrame(this.draw);
   }
 }

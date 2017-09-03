@@ -19,16 +19,20 @@
       maxCols: 100,
       maxRows: 100,
       backgroundColor: '#0c1328',
-      particleDelay: 0,
-      particleOffset: 0,
+      particleDelay: 240,
+      particleOffset: 20,
       particleSize: 2,
-      globalAlpha: 1,
+      globalAlpha: 0.6,
+      repeat: true,
     });
 
     main.drawImage('./rocket/rocket.png', {
-      // startFrom: 'onePoint'
+      startFrom: 'onePoint'
     });
 
+    // main.drawImage('./rocket/2dfire.png', {
+    //   // startFrom: 'onePoint'
+    // });
     // console.log(main);
   </script>
 </body>

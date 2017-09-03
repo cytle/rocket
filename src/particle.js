@@ -10,6 +10,8 @@ export default class Particle {
   }) {
     this.x = start.x;
     this.y = start.y;
+    this.targetX = x;
+    this.targetY = y;
     this.offsetX = x - start.x;
     this.offsetY = y - start.y;
     this.fillStyle = fillStyle;
@@ -39,29 +41,33 @@ export default class Particle {
   nextPoint(animation, totalTime) {
     this.time += this.timeGap;
 
-    // time 小于1表示还没有画布中
-    if (this.time < 1) {
+    // time 小于0表示还没有画布中
+    if (this.time < 0) {
       this.status = -1;
       return null;
     }
 
-    const { time, x, y, offsetX, offsetY } = this;
+    const { time, x, y, offsetX, offsetY, targetX, targetY } = this;
+    if (time < totalTime) {
+      this.status = 0;
 
-    this.status = time > totalTime ? 1 : 0;
+      return [
+        animation({
+          now: x,
+          total: offsetX,
+          time,
+          totalTime,
+        }),
+        animation({
+          now: y,
+          total: offsetY,
+          time,
+          totalTime,
+        }),
+      ];
+    }
 
-    return {
-      x: animation({
-        now: x,
-        total: offsetX,
-        time,
-        totalTime,
-      }) >> 0,
-      y: animation({
-        now: y,
-        total: offsetY,
-        time,
-        totalTime,
-      }) >> 0,
-    };
+    this.status = 1;
+    return [targetX, targetY];
   }
 }
