@@ -6,10 +6,11 @@ export default {
   input: 'src/index.js',
   output: {
     file: 'dist/bundle.js',
-    format: 'iife'
+    format: 'iife',
+    moduleName: 'Rocket',
   },
   plugins: [
     resolve(),
-    babel(babelrc())
-  ]
+    babel(babelrc()),
+  ],
 };

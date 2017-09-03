@@ -1,8 +1,8 @@
 function easeInOutExpo({ time, now, total, totalTime }) {
-  const t = time / totalTime / 2;
-  return t < 1
-    ? (2 ** (10 * (t - 1))) * total / 2 + now
-    : (2 - 2 ** (-10 * (t - 1))) * total / 2 + now;
+  time /= totalTime / 2;
+  return time < 1
+    ? total / 2 * Math.pow(2, 10 * (time - 1)) + now
+    : total / 2 * (-Math.pow(2, -10 * (time - 1)) + 2) + now;
 }
 
 export {

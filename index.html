@@ -11,5 +11,25 @@
 <body>
   <canvas id="myCanvas"></canvas>
 	<script src="./dist/bundle.js" charset="utf-8"></script>
+  <script type="text/javascript">
+    const main = new Rocket({
+      el: document.getElementById('myCanvas'),
+      width: document.body.clientWidth,
+      height: document.body.clientHeight,
+      maxCols: 100,
+      maxRows: 100,
+      backgroundColor: '#0c1328',
+      particleDelay: 0,
+      particleOffset: 0,
+      particleSize: 2,
+      globalAlpha: 1,
+    });
+
+    main.drawImage('./rocket/rocket.png', {
+      // startFrom: 'onePoint'
+    });
+
+    // console.log(main);
+  </script>
 </body>
 </html>

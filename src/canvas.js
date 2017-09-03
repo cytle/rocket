@@ -34,6 +34,13 @@ class Canvas {
 
     return imageData.data;
   }
+  clear() {
+    const {
+      ctx, width, height, backgroundColor,
+    } = this;
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, width, height);
+  }
 
   // 清空画布
   beforeDraw() {
@@ -54,15 +61,14 @@ class Canvas {
     } = this;
 
     this.beforeDraw();
-
-    particles
-      .forEach((particle) => {
-        const point = particle.nextPoint(easeInOutExpo, totalTime);
-        if (!point) {
-          ctx.fillStyle = particle.fillStyle;
-          ctx.fillRect(point.x, point.y, 1, 1);
-        }
-      });
+    for (let i = 0; i < particles.length; i++) {
+      const particle = particles[i];
+      const point = particle.nextPoint(easeInOutExpo, totalTime);
+      if (point !== null) {
+        ctx.fillStyle = particle.fillStyle;
+        ctx.fillRect(point.x, point.y, particle.size, particle.size);
+      }
+    }
   }
 }
 

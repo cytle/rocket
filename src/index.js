@@ -9,7 +9,7 @@ function loadImage(src, cb) {
   imgObj.src = src;
 }
 
-class Main {
+export default class Rocket {
   constructor({
     totalTime = 120,
     el,
@@ -21,6 +21,7 @@ class Main {
     maxRows = 50,
     particleDelay,
     particleOffset,
+    particleSize = 2,
   }) {
     // 获取canvas元素
     this.canvas = new Canvas({
@@ -36,23 +37,33 @@ class Main {
     this.maxRows = maxRows;
     this.particleDelay = particleDelay;
     this.particleOffset = particleOffset;
+    this.particleSize = particleSize;
   }
-  drawImage(src) {
+  drawImage(src, {
+    startFrom = 'full',
+  } = {}) {
+    const canvas = this.canvas;
+    canvas.clear();
+    this.particles = [];
     loadImage(src, (imgObj) => {
       this.image = {
         width: imgObj.width,
         height: imgObj.height,
-        x: (this.canvas.width - imgObj.width) / 2,
-        y: (this.canvas.height - imgObj.height) / 2,
+        x: (canvas.width - imgObj.width) / 2,
+        y: (canvas.height - imgObj.height) / 2,
       };
-      const imageData = this.canvas.readImageData(this.image, imgObj);
+      const imageData = canvas.readImageData(this.image, imgObj);
+      const generateStart = startFrom === 'full'
+        ? this.fullParticlesStart()
+        : this.onePointParticlesStart();
 
       this.particles = this.calculateParticles(imageData, {
-        start: this.fullParticlesStart(),
+        generateStart,
       });
       this.draw();
     });
   }
+
   fullParticlesStart() {
     const { width, height } = this.canvas;
     return () => ({
@@ -62,14 +73,16 @@ class Main {
   }
 
   onePointParticlesStart() {
+    const canvas = this.canvas;
+    const image = this.image;
     const start = {
-      x: this.canvas.width / 2,
-      y: Math.min(this.canvas.height - 10, this.image.y + this.image.height + 300),
+      x: canvas.width / 2,
+      y: Math.min(canvas.height, image.y + image.height + 300),
     };
     return () => start;
   }
 
-  calculateParticles(imageData, { start }) {
+  calculateParticles(imageData, { generateStart }) {
     const particles = [];
     const {
       x: imageX,
@@ -100,7 +113,8 @@ class Main {
           x: imageX + x,
           y: imageY + y,
           fillStyle: `rgb(${imageData[pos]}, ${imageData[pos + 1]}, ${imageData[pos + 2]})`,
-          start: start(),
+          start: generateStart(),
+          size: this.particleSize,
           delay: this.particleDelay,
           offset: this.particleOffset,
         }));
@@ -110,28 +124,16 @@ class Main {
   }
 
   draw() {
-    if (this.particles.every(({ isFinished }) => isFinished)) {
-      this.particles.forEach(p => p.reverse());
+    const particles = this.particles;
+    if (particles.every(({ isFinished }) => isFinished)) {
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].reverse();
+      }
     }
-    this.canvas.drawParticles(this.particles);
+
+    this.canvas.drawParticles(particles);
 
     // 下一帧绘画
     requestAnimationFrame(this.draw);
   }
 }
-
-const main = new Main({
-  el: document.getElementById('myCanvas'),
-  particleDelay: 240,
-  particleOffset: 10,
-  maxCols: 100,
-  maxRows: 100,
-  width: document.body.clientWidth,
-  height: document.body.clientHeight,
-  globalAlpha: 0.4,
-  backgroundColor: '#0c1328',
-});
-
-main.draw('./rocket/rocket.png');
-
-// console.log(main);

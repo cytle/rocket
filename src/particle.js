@@ -3,6 +3,7 @@ export default class Particle {
     x,
     y,
     fillStyle,
+    size,
     start,
     delay,
     offset,
@@ -12,6 +13,7 @@ export default class Particle {
     this.offsetX = x - start.x;
     this.offsetY = y - start.y;
     this.fillStyle = fillStyle;
+    this.size = size;
     this.timeGap = 1;
     if (offset) {
       this.offsetX += (Math.random() - 0.5) * offset;
@@ -53,13 +55,13 @@ export default class Particle {
         total: offsetX,
         time,
         totalTime,
-      }),
+      }) >> 0,
       y: animation({
         now: y,
         total: offsetY,
         time,
         totalTime,
-      }),
+      }) >> 0,
     };
   }
 }
