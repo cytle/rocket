@@ -17,13 +17,9 @@ export default class Rocket {
     height = 400,
     globalAlpha,
     backgroundColor,
-    maxCols = 100,
-    maxRows = 50,
-    particleDelay,
-    particleOffset,
-    particleSize = 2,
-    repeat = false,
+    ...options
   }) {
+    this.draw = this.draw.bind(this);
     // 获取canvas元素
     this.canvas = new Canvas({
       totalTime,
@@ -33,17 +29,30 @@ export default class Rocket {
       globalAlpha,
       backgroundColor,
     });
-    this.draw = this.draw.bind(this);
+    this.setOptions(options);
+  }
+
+  setOptions({
+    maxCols = 100,
+    maxRows = 50,
+    particleDelay = 0,
+    particleOffset = 0,
+    particleSize = 2,
+    repeat = false,
+    startFrom = 'full',
+  }) {
     this.maxCols = maxCols;
     this.maxRows = maxRows;
     this.particleDelay = particleDelay;
     this.particleOffset = particleOffset;
     this.particleSize = particleSize;
     this.repeat = repeat;
+    this.startFrom = startFrom;
   }
-  drawImage(src, {
-    startFrom = 'full',
-  } = {}) {
+
+  drawImage(src, options) {
+    this.setOptions(options);
+
     loadImage(src, (imgObj) => {
       const canvas = this.canvas;
       this.image = {
@@ -53,7 +62,7 @@ export default class Rocket {
         y: (canvas.height - imgObj.height) / 2,
       };
       const imageData = canvas.readImageData(this.image, imgObj);
-      const generateStart = startFrom === 'full'
+      const generateStart = this.startFrom === 'full'
         ? this.fullParticlesStart()
         : this.onePointParticlesStart();
 
@@ -62,10 +71,14 @@ export default class Rocket {
       });
 
       canvas.clear();
-      cancelAnimationFrame(this.requestID);
+      this.stop();
 
       this.draw();
     });
+  }
+
+  stop() {
+    cancelAnimationFrame(this.requestID);
   }
 
   fullParticlesStart() {
