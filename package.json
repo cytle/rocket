@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-		"build": "rollup -c rollup.config.js",
+    "build": "rollup -c rollup.config.js",
     "dev": "rollup -c rollup.config.js --watch"
   },
   "author": "炒饭 <chaofan@2dfire.com>",
@@ -12,6 +12,7 @@
     "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "babelrc-rollup": "^3.0.0",
     "eslint": "^3.19.0",
