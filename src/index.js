@@ -51,7 +51,8 @@ export default class Rocket {
   }
 
   drawImage(src, options) {
-    this.setOptions(options);
+    // this.setOptions(options);
+    this.startFrom = options.startFrom;
 
     loadImage(src, (imgObj) => {
       const canvas = this.canvas;

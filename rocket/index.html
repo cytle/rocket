@@ -113,9 +113,9 @@
     function drawPoint(ctx, { bW, bH, x, y, curTime, fillStyle }, totalTime) {
 			// curTime 小于1表示还没有画布中
       if (curTime < 1) return -1;
-      //设置填充颜色
+      // 设置填充颜色
       ctx.fillStyle = fillStyle
-      //绘粒子到画布上
+      // 绘粒子到画布上
       ctx.fillRect(
         easeInOutExpo(curTime, x, bW, totalTime),
         easeInOutExpo(curTime, y, bH, totalTime),

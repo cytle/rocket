@@ -5,22 +5,23 @@ export default class Particle {
     fillStyle,
     size,
     start,
-    delay,
-    offset,
+    delay = 240,
+    offset = 10,
   }) {
     this.x = start.x;
     this.y = start.y;
-    this.targetX = x;
-    this.targetY = y;
-    this.offsetX = x - start.x;
-    this.offsetY = y - start.y;
     this.fillStyle = fillStyle;
     this.size = size;
     this.timeGap = 1;
+    this.targetX = x;
+    this.targetY = y;
     if (offset) {
-      this.offsetX += (Math.random() - 0.5) * offset;
-      this.offsetY += (Math.random() - 0.5) * offset;
+      this.targetX += (Math.random() - 0.5) * offset;
+      this.targetY += (Math.random() - 0.5) * offset;
     }
+
+    this.offsetX = this.targetX - this.x;
+    this.offsetY = this.targetY - this.y;
 
     this.initialTime = delay
        ? (-1 * Math.random() * delay) >> 0
@@ -50,24 +51,23 @@ export default class Particle {
     const { time, x, y, offsetX, offsetY, targetX, targetY } = this;
     if (time < totalTime) {
       this.status = 0;
-
-      return [
-        animation({
-          now: x,
-          total: offsetX,
-          time,
-          totalTime,
-        }),
-        animation({
-          now: y,
-          total: offsetY,
-          time,
-          totalTime,
-        }),
-      ];
+    } else {
+      this.status = 1;
     }
 
-    this.status = 1;
-    return [targetX, targetY];
+    return [
+      animation({
+        now: x,
+        total: offsetX,
+        time,
+        totalTime,
+      }),
+      animation({
+        now: y,
+        total: offsetY,
+        time,
+        totalTime,
+      }),
+    ];
   }
 }
