@@ -145,7 +145,6 @@ export default class Rocket {
     const particles = this.particles;
     if (particles.every(p => p.isFinished)) {
       if (!this.repeat) {
-        console.info('finish');
         return;
       }
       for (let i = 0; i < particles.length; i++) {

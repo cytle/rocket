@@ -1,10 +1,10 @@
 export default class Particle {
   constructor({
-    x,
-    y,
+    x, // 点的x坐标
+    y, // 点的y坐标
     fillStyle,
     size,
-    start,
+    start, // 出发点
     delay = 240,
     offset = 10,
   }) {
@@ -13,19 +13,12 @@ export default class Particle {
     this.fillStyle = fillStyle;
     this.size = size;
     this.timeGap = 1;
-    this.targetX = x;
-    this.targetY = y;
-    if (offset) {
-      this.targetX += (Math.random() - 0.5) * offset;
-      this.targetY += (Math.random() - 0.5) * offset;
-    }
+    // 偏移量 = 最终位置 + 随机偏移值 - 初始位置
+    this.offsetX = x + (Math.random() - 0.5) * offset - this.x;
+    this.offsetY = y + (Math.random() - 0.5) * offset - this.y;
 
-    this.offsetX = this.targetX - this.x;
-    this.offsetY = this.targetY - this.y;
-
-    this.initialTime = delay
-       ? (-1 * Math.random() * delay) >> 0
-      : 0;
+    // 出发延迟时间范围为(-delay, 0]
+    this.initialTime = (-1 * Math.random() * delay) >> 0;
 
     this.time = this.initialTime;
     this.status = 0;
@@ -48,7 +41,7 @@ export default class Particle {
       return null;
     }
 
-    const { time, x, y, offsetX, offsetY, targetX, targetY } = this;
+    const { time, x, y, offsetX, offsetY } = this;
     if (time < totalTime) {
       this.status = 0;
     } else {
