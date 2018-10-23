@@ -59,8 +59,8 @@ export default class Rocket {
       this.image = {
         width: imgObj.width,
         height: imgObj.height,
-        x: (canvas.width - imgObj.width) / 2,
-        y: (canvas.height - imgObj.height) / 2,
+        x: 'x' in options ? options.x : (canvas.width - imgObj.width) / 2,
+        y: 'y' in options ? options.y : (canvas.height - imgObj.height) / 2,
       };
       const imageData = canvas.readImageData(this.image, imgObj);
       const generateStart = this.startFrom === 'full'
